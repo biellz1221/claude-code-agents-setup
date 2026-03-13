@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "model": "claude-sonnet-4-6",
+  "autoMemoryEnabled": true,
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(npm run *)",
+      "Bash(npm test *)",
+      "Bash(npm install *)",
+      "Bash(npx *)",
+      "Bash(pnpm *)",
+      "Bash(git status)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git branch *)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(git stash *)",
+      "Bash(docker compose *)",
+      "Bash(docker build *)",
+      "Bash(docker run *)",
+      "Bash(gh pr *)",
+      "Bash(gh issue *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cp *)",
+      "Bash(mv *)",
+      "Bash(du *)",
+      "Bash(wc *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(jq *)"
+    ],
+    "deny": [
+      "Bash(rm -rf /)",
+      "Bash(rm -rf ~)",
+      "Bash(git push --force *)",
+      "Bash(git reset --hard *)",
+      "Bash(curl * | bash)",
+      "Bash(curl * | sh)",
+      "Bash(wget * | bash)",
+      "Bash(npm publish *)",
+      "Bash(npx prisma migrate reset *)",
+      "Bash(drop database *)",
+      "Bash(DROP DATABASE *)"
+    ]
+  },
+  "env": {
+    "NODE_ENV": "development",
+    "FORCE_COLOR": "1"
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\" sound name \"Ping\"'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -2,13 +2,13 @@
 set -e
 
 # ============================================================
-# Claude Code Environment Setup — Gabriel (Dev Solo)
+# Claude Code Environment Setup
 # ============================================================
 # Este script configura o ambiente global do Claude Code com:
 # - settings.json global
 # - CLAUDE.md global
-# - 9 subagentes especializados
-# - 6 skills customizadas
+# - 15 subagentes especializados
+# - 10 skills customizadas (slash commands)
 # - 3 rule files (TypeScript, NestJS, React)
 # - Template de dev container
 # - MCPs globais (Context7, Playwright, Prisma)
@@ -24,7 +24,7 @@ echo "║  Stack: Node.js / NestJS / Prisma / React        ║"
 echo "╚══════════════════════════════════════════════════╝"
 echo ""
 
-# ---- Create directory structure ----
+# ---- Criar estrutura de diretórios ----
 echo "📁 Criando estrutura de diretórios..."
 mkdir -p "$CLAUDE_DIR/agents"
 mkdir -p "$CLAUDE_DIR/skills/prospecting"
@@ -39,7 +39,7 @@ mkdir -p "$CLAUDE_DIR/skills/hormozi-offer"
 mkdir -p "$CLAUDE_DIR/skills/trend-scanner"
 mkdir -p "$CLAUDE_DIR/rules"
 
-# ---- Copy settings.json ----
+# ---- Copiar settings.json ----
 echo "⚙️  Instalando settings.json global..."
 if [ -f "$CLAUDE_DIR/settings.json" ]; then
   echo "   ⚠️  settings.json já existe. Fazendo backup em settings.json.bak"
@@ -47,7 +47,7 @@ if [ -f "$CLAUDE_DIR/settings.json" ]; then
 fi
 cp "$SCRIPT_DIR/settings.json" "$CLAUDE_DIR/settings.json"
 
-# ---- Copy CLAUDE.md ----
+# ---- Copiar CLAUDE.md ----
 echo "📝 Instalando CLAUDE.md global..."
 if [ -f "$CLAUDE_DIR/CLAUDE.md" ]; then
   echo "   ⚠️  CLAUDE.md já existe. Fazendo backup em CLAUDE.md.bak"
@@ -55,7 +55,7 @@ if [ -f "$CLAUDE_DIR/CLAUDE.md" ]; then
 fi
 cp "$SCRIPT_DIR/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 
-# ---- Copy agents ----
+# ---- Copiar agentes ----
 echo "🤖 Instalando subagentes..."
 for agent_file in "$SCRIPT_DIR"/agents/*.md; do
   if [ -f "$agent_file" ]; then
@@ -65,18 +65,17 @@ for agent_file in "$SCRIPT_DIR"/agents/*.md; do
   fi
 done
 
-# ---- Copy skills ----
+# ---- Copiar skills ----
 echo "🧠 Instalando skills..."
 for skill_dir in "$SCRIPT_DIR"/skills/*; do
   if [ -d "$skill_dir" ]; then
     skill_name=$(basename "$skill_dir")
-    # Remove trailing slash to ensure cp -r copies the directory itself, not just contents
     cp -r "${skill_dir%/}" "$CLAUDE_DIR/skills/"
     echo "   ✅ $skill_name"
   fi
 done
 
-# ---- Copy rules ----
+# ---- Copiar rules ----
 echo "📏 Instalando rules..."
 for rule_file in "$SCRIPT_DIR"/rules/*.md; do
   if [ -f "$rule_file" ]; then
@@ -86,23 +85,22 @@ for rule_file in "$SCRIPT_DIR"/rules/*.md; do
   fi
 done
 
-# ---- Install MCPs ----
+# ---- Instalar MCPs ----
 echo ""
 echo "🔌 Instalando MCPs globais..."
 
-# Check if claude CLI is available
 if command -v claude &> /dev/null; then
   echo "   Instalando Context7 (documentação atualizada)..."
   claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp@latest 2>/dev/null && \
-    echo "   ✅ Context7" || echo "   ⚠️  Context7 - falhou (instalar manualmente)"
+    echo "   ✅ Context7" || echo "   ⚠️  Context7 — falhou (instalar manualmente)"
 
-  echo "   Instalando Playwright (testes e2e)..."
+  echo "   Instalando Playwright (testes e2e e automação)..."
   claude mcp add playwright --scope user -- npx -y @playwright/mcp@latest 2>/dev/null && \
-    echo "   ✅ Playwright" || echo "   ⚠️  Playwright - falhou (instalar manualmente)"
+    echo "   ✅ Playwright" || echo "   ⚠️  Playwright — falhou (instalar manualmente)"
 
   echo "   Instalando Prisma MCP..."
   claude mcp add prisma --scope user -- npx -y prisma mcp 2>/dev/null && \
-    echo "   ✅ Prisma" || echo "   ⚠️  Prisma - falhou (instalar manualmente)"
+    echo "   ✅ Prisma" || echo "   ⚠️  Prisma — falhou (instalar manualmente)"
 else
   echo "   ⚠️  Claude CLI não encontrado. Instale MCPs manualmente:"
   echo "      claude mcp add context7 --scope user -- npx -y @upstash/context7-mcp@latest"
@@ -110,7 +108,7 @@ else
   echo "      claude mcp add prisma --scope user -- npx -y prisma mcp"
 fi
 
-# ---- Summary ----
+# ---- Resumo ----
 echo ""
 echo "╔══════════════════════════════════════════════════╗"
 echo "║  ✅ Setup concluído!                             ║"
@@ -119,38 +117,38 @@ echo ""
 echo "📂 Arquivos instalados em: $CLAUDE_DIR/"
 echo ""
 echo "Subagentes disponíveis:"
-echo "  🏗️  architect       — Projeta arquitetura e estrutura"
-echo "  ⚙️  backend-dev     — Implementa backend NestJS"
-echo "  🎨 frontend-dev    — Implementa frontend React"
-echo "  📄 landing-page    — Cria landing pages de conversão"
-echo "  🧪 qa-tester       — Cria e executa testes"
-echo "  🔒 security-auditor— Auditoria de segurança"
-echo "  👀 code-reviewer   — Code review automatizado"
-echo "  🗄️  db-specialist   — Modelagem e otimização de banco"
-echo "  🚀 devops          — Docker, CI/CD e infraestrutura"
-echo "  💡 feature-ideator — Análise de projeto + ideias de features"
-echo "  📱 mobile-dev      — React Native / Expo mobile apps"
-echo "  ✍️  ad-copywriter   — Copy para Meta/Google/TikTok Ads"
-echo "  🎬 video-scripter  — Roteiros de vídeo pra ads"
-echo "  🎨 ad-creative     — Conceitos visuais e briefs de anúncios"
-echo "  📊 marketing-strat — Estratégia completa de marketing"
+echo "  🏗️  architect        — Arquitetura de software e estrutura de projeto"
+echo "  ⚙️  backend-dev      — Implementação de backend NestJS"
+echo "  🎨 frontend-dev     — Implementação de frontend React"
+echo "  📄 landing-page     — Landing pages de alta conversão"
+echo "  🧪 qa-tester        — Testes automatizados (unit, integration, e2e)"
+echo "  🔒 security-auditor — Auditoria de segurança e vulnerabilidades"
+echo "  👀 code-reviewer    — Code review automatizado"
+echo "  🗄️  db-specialist    — Modelagem de dados e otimização de queries"
+echo "  🚀 devops           — Docker, CI/CD e infraestrutura"
+echo "  💡 feature-ideator  — Ideias de features e análise de produto"
+echo "  📱 mobile-dev       — Apps mobile com React Native / Expo"
+echo "  ✍️  ad-copywriter    — Copy para ads (Meta/Google/TikTok)"
+echo "  🎬 video-scripter   — Roteiros de vídeo para anúncios"
+echo "  🎨 ad-creative      — Conceitos visuais e briefs de criativos"
+echo "  📊 marketing-strat  — Estratégia completa de marketing"
 echo ""
-echo "Skills disponíveis:"
-echo "  /prospecting       — Prospecção de leads"
-echo "  /idea-validator    — Validação de ideias"
-echo "  /qa-suite          — Suite completa de QA"
-echo "  /pentest           — Auditoria de segurança"
-echo "  /api-scaffold      — Scaffold de módulo NestJS"
+echo "Skills disponíveis (slash commands):"
+echo "  /prospecting       — Prospecção e qualificação de leads"
+echo "  /idea-validator    — Validação de ideias de produto"
+echo "  /qa-suite          — Suite completa de QA (testes, lint, build, audit)"
+echo "  /pentest           — Teste de penetração de segurança"
+echo "  /api-scaffold      — Gerador de scaffold de módulo NestJS"
 echo "  /landing-gen       — Gerador de landing page"
-echo "  /light-copy        — Copy conversacional (método Ladeira)"
-echo "  /funnel-strategy   — Funis de venda (Russell Brunson)"
-echo "  /hormozi-offer     — Ofertas irresistíveis (Alex Hormozi)"
-echo "  /trend-scanner     — Tendências do mercado digital"
+echo "  /light-copy        — Copy conversacional (método Light Copy)"
+echo "  /funnel-strategy   — Funis de venda (framework Brunson)"
+echo "  /hormozi-offer     — Ofertas irresistíveis (framework Hormozi)"
+echo "  /trend-scanner     — Scanner de tendências de marketing digital"
 echo ""
 echo "MCPs globais:"
 echo "  📚 Context7        — Docs atualizadas de qualquer lib"
-echo "  🎭 Playwright      — Testes e2e e automação"
-echo "  💎 Prisma          — Schema e queries"
+echo "  🎭 Playwright      — Testes e2e e automação de browser"
+echo "  💎 Prisma          — Schema e assistência de queries"
 echo ""
 echo "Para usar dev containers em um projeto:"
 echo "  cp -r $SCRIPT_DIR/devcontainer-template/ seu-projeto/.devcontainer/"
